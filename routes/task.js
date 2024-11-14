@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { Type, Task } = require("../models");
-const { Op, where } = require("sequelize");
+const { Op } = require("sequelize");
 
 // TODO : RETOURNER L'OBJET TYPE (AVEC SON ID ET SON TITRE)
 // Récupérer les données dans les 2 tables (il existe une méthode faite pour, cf. doc sequelize)

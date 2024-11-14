@@ -1,5 +1,3 @@
-const sequelize = require("../core/orm");
-
 const Type = require("./Type");
 const Task = require("./Task");
 
