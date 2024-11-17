@@ -9,6 +9,10 @@ router.get("/", async (req, res) => {
   const typesPerPage = parseInt(filterQueries.typesPerPage, 10) || 5;
   const currentPage = parseInt(filterQueries.page, 10) || 1;
 
+  if(typesPerPage < 1 || currentPage < 1) {
+    return res.status(400).send("Erreur de pagination");
+  }
+
   try {
     const { count: totalTypes, rows: types } = await Type.findAndCountAll({
       attributes: ["id", "title"],
@@ -41,6 +45,9 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Format d'ID invalide" });
+  }
 
   try {
     const type = await Type.findByPk(id, {
@@ -76,6 +83,10 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   const id = req.params.id;
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Format d'ID invalide" });
+  }
+
   const updatedAttributes = req.body;
 
   try {
@@ -101,6 +112,9 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Format d'ID invalide" });
+  }
 
   try {
     const type = await Type.findByPk(id);
@@ -112,7 +126,7 @@ router.delete("/:id", async (req, res) => {
     }
 
     await type.destroy();
-    res.status(204);
+    res.status(204).send();
   } catch (ex) {
     console.error(ex);
     res.status(500).json({ error: "Erreur serveur" });
