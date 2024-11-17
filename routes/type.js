@@ -5,15 +5,12 @@ const { Op } = require("sequelize");
 
 router.get("/", async (req, res) => {
   const filterQueries = req.query;
-  let totalTypes = 0;
-  let typesPerPage = 20;
-  let currentPage = 1;
 
-  typesPerPage = parseInt(filterQueries.typesPerPage, 10) || typesPerPage;
-  currentPage = parseInt(filterQueries.page, 10) || currentPage;
+  const typesPerPage = parseInt(filterQueries.typesPerPage, 10) || 5;
+  const currentPage = parseInt(filterQueries.page, 10) || 1;
 
   try {
-    const types = await Type.findAll({
+    const { count: totalTypes, rows: types } = await Type.findAndCountAll({
       attributes: ["id", "title"],
       where: {
         ...(filterQueries.title && {
@@ -24,11 +21,14 @@ router.get("/", async (req, res) => {
       limit: typesPerPage,
     });
 
-    totalTypes = types.length;
+    const hasNextPage = currentPage * typesPerPage < totalTypes;
+    const hasPrevPage = currentPage > 1;
 
     const response = {
-      typesPerPage,
       totalTypes,
+      currentPage,
+      hasNextPage,
+      hasPrevPage,
       types,
     };
 

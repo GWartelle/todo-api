@@ -5,12 +5,18 @@ const { Op} = require("sequelize");
 
 router.get("/", async (req, res) => {
   const filterQueries = req.query;
-  let totalTasks = 0;
-  let tasksPerPage = 20;
-  let currentPage = 1;
+  const validBooleanValues = ["true", "false"];
 
-  tasksPerPage = parseInt(filterQueries.tasksPerPage, 10) || tasksPerPage;
-  currentPage = parseInt(filterQueries.page, 10) || currentPage;
+  const tasksPerPage = parseInt(filterQueries.tasksPerPage, 10) || 5;
+  const currentPage = parseInt(filterQueries.page, 10) || 1;
+
+  if (filterQueries.isDone && !validBooleanValues.includes(filterQueries.isDone)) {
+    return res.status(400).send("Valeur invalide pour le filtre 'isDone'. Seules les valeurs 'true' ou 'false' sont autorisées");
+  }
+
+  if (filterQueries.isLate && !validBooleanValues.includes(filterQueries.isLate)) {
+    return res.status(400).send("Valeur invalide pour le filtre 'isLate'. Seules les valeurs 'true' ou 'false' sont autorisées");
+  }
 
   const whereClause = {
     ...(filterQueries.title && {
@@ -19,15 +25,15 @@ router.get("/", async (req, res) => {
     ...(filterQueries.isDone && { done: filterQueries.isDone === "true" }),
     ...(filterQueries.isLate && {
       dueDate:
-        filterQueries.isLate === "true"
-          ? { [Op.lt]: new Date() }
-          : { [Op.gte]: new Date() },
+          filterQueries.isLate === "true"
+              ? { [Op.lt]: new Date() }
+              : { [Op.gte]: new Date() },
       done: false,
     }),
   };
 
   try {
-    const tasks = await Task.findAll({
+    const { count: totalTasks, rows: tasks } = await Task.findAndCountAll({
       attributes: [
         "id",
         "title",
@@ -46,14 +52,17 @@ router.get("/", async (req, res) => {
           model: Type,
           attributes: ["id", "title"],
         },
-      ]
+      ],
     });
 
-    totalTasks = tasks.length;
+    const hasNextPage = currentPage * tasksPerPage < totalTasks;
+    const hasPrevPage = currentPage > 1;
 
     const response = {
-      tasksPerPage,
       totalTasks,
+      currentPage,
+      hasNextPage,
+      hasPrevPage,
       tasks,
     };
 
