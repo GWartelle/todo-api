@@ -1,7 +1,7 @@
 const Type = require("./Type");
 const Task = require("./Task");
 
-Task.hasOne(Type);
+Task.belongsTo(Type);
 Type.hasMany(Task);
 
 // sequelize.sync({ alter: true });

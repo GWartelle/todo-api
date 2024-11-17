@@ -1,10 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { Type, Task } = require("../models");
-const { Op } = require("sequelize");
+const { Op} = require("sequelize");
 
-// TODO : RETOURNER L'OBJET TYPE (AVEC SON ID ET SON TITRE)
-// Récupérer les données dans les 2 tables (il existe une méthode faite pour, cf. doc sequelize)
 router.get("/", async (req, res) => {
   const filterQueries = req.query;
   let totalTasks = 0;
@@ -43,6 +41,12 @@ router.get("/", async (req, res) => {
       where: Object.keys(whereClause).length ? whereClause : undefined,
       offset: (currentPage - 1) * tasksPerPage,
       limit: tasksPerPage,
+      include: [
+        {
+          model: Type,
+          attributes: ["id", "title"],
+        },
+      ]
     });
 
     totalTasks = tasks.length;
@@ -60,19 +64,11 @@ router.get("/", async (req, res) => {
   }
 });
 
-// TODO : RETOURNER L'OBJET TYPE (AVEC SON ID ET SON TITRE)
-// Récupérer les données dans les 2 tables (il existe une méthode faite pour, cf. doc sequelize)
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    const task = await Task.findByPk(id, {
-      //   include: [
-      //     {
-      //       model: Type,
-      //       where: { id: { [Op.eq]: Sequelize.col("Task.TypeId") } },
-      //     },
-      //   ],
+    const task = await Task.findOne({
       attributes: [
         "id",
         "title",
@@ -83,6 +79,15 @@ router.get("/:id", async (req, res) => {
         "updatedAt",
         "TypeId",
       ],
+      where: {
+        id: id,
+      },
+      include: [
+        {
+          model: Type,
+          attributes: ["id", "title"],
+        },
+      ]
     });
 
     if (!task) {
