@@ -10,10 +10,6 @@ router.get("/", async (req, res) => {
   const tasksPerPage = parseInt(filterQueries.tasksPerPage, 10) || 5;
   const currentPage = parseInt(filterQueries.page, 10) || 1;
 
-  if(tasksPerPage < 1 || currentPage < 1) {
-    return res.status(400).send("Erreur de pagination");
-  }
-
   if (filterQueries.isDone && !validBooleanValues.includes(filterQueries.isDone)) {
     return res.status(400).send("Valeur invalide pour le filtre 'isDone'. Seules les valeurs 'true' ou 'false' sont autorisées");
   }
@@ -28,11 +24,14 @@ router.get("/", async (req, res) => {
     }),
     ...(filterQueries.isDone && { done: filterQueries.isDone === "true" }),
     ...(filterQueries.isLate && {
-      dueDate:
-          filterQueries.isLate === "true"
+      [Op.and]: [
+        { done: false },
+        {
+          dueDate: filterQueries.isLate === "true"
               ? { [Op.lt]: new Date() }
               : { [Op.gte]: new Date() },
-      done: false,
+        },
+      ],
     }),
   };
 
