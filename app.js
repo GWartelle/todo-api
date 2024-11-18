@@ -13,6 +13,7 @@ const indexRouter = require("./routes/index");
 const typeRouter = require("./routes/type");
 const taskRouter = require("./routes/task");
 const legacyTaskRouter = require("./routes/legacy_task");
+const authRouter = require("./routes/auth");
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/", indexRouter);
 app.use("/types", typeRouter);
 app.use("/tasks", taskRouter);
 app.use("/legacy/tasks", legacyTaskRouter);
+app.use("/auth", authRouter);
 
 app.use((req, res) => {
   res.status(404).send("Not Found");

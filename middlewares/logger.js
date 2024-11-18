@@ -12,9 +12,8 @@ const logger = (req, res, next) => {
   const logFilePath = path.join(logDirPath, logFileName);
 
   res.on("finish", () => {
-    const logMessage = `${req.method} ${
-      res.statusCode
-    } ${new Date().toISOString()} ${req.originalUrl}\n`;
+    const logMessage = `${req.method} ${res.statusCode} 
+    ${new Date().toISOString()} ${req.originalUrl}\n`;
 
     fs.appendFile(logFilePath, logMessage, (err) => {
       if (err) {
