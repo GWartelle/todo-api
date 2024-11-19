@@ -16,14 +16,14 @@ const verifyToken = (req, res, next) => {
     if (error) {
       res.status(401);
       if (error.name == "TokenExpiredError") {
-        res.send("Token expired");
+        return res.send("Token expired");
       } else {
-        res.send("Invalid token");
+        return res.send("Invalid token");
       }
     }
 
-    req.user = payload;
-    next();
+    req.userId = payload.id;
+    return next();
   });
 };
 

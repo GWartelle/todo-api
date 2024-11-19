@@ -1,5 +1,4 @@
 const { DataTypes } = require("sequelize");
-
 const sequelize = require("../core/orm");
 
 const Task = sequelize.define("Task", {
