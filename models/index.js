@@ -1,4 +1,4 @@
-// const sequelize = require("../core/orm");
+const sequelize = require("../core/orm");
 const Task = require("./Task");
 const Type = require("./Type");
 const User = require("./User");
