@@ -24,10 +24,7 @@ const User = sequelize.define("User", {
 User.beforeCreate(async (user) => {
   console.log("Before hash", user.password);
 
-  const codedPassword = await bcrypt.hash(
-    user.password,
-    12 // Number of salt rounds
-  );
+  const codedPassword = await bcrypt.hash(user.password, 12);
   user.password = codedPassword;
 
   console.log("After hash", user.password);

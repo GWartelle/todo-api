@@ -110,6 +110,7 @@ router.post("/verify-token", async (req, res) => {
       } else {
         res.send("Invalid token");
       }
+      return;
     }
 
     res.send("Welcome user n°" + payload.id);
