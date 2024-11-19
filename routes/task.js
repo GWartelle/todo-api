@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { Type, Task } = require("../models");
-const { Op} = require("sequelize");
+const { Op } = require("sequelize");
 
 router.get("/", async (req, res) => {
   const filterQueries = req.query;
@@ -10,12 +10,26 @@ router.get("/", async (req, res) => {
   const tasksPerPage = parseInt(filterQueries.tasksPerPage, 10) || 5;
   const currentPage = parseInt(filterQueries.page, 10) || 1;
 
-  if (filterQueries.isDone && !validBooleanValues.includes(filterQueries.isDone)) {
-    return res.status(400).send("Valeur invalide pour le filtre 'isDone'. Seules les valeurs 'true' ou 'false' sont autorisées");
+  if (
+    filterQueries.isDone &&
+    !validBooleanValues.includes(filterQueries.isDone)
+  ) {
+    return res
+      .status(400)
+      .send(
+        "Valeur invalide pour le filtre 'isDone'. Seules les valeurs 'true' ou 'false' sont autorisées"
+      );
   }
 
-  if (filterQueries.isLate && !validBooleanValues.includes(filterQueries.isLate)) {
-    return res.status(400).send("Valeur invalide pour le filtre 'isLate'. Seules les valeurs 'true' ou 'false' sont autorisées");
+  if (
+    filterQueries.isLate &&
+    !validBooleanValues.includes(filterQueries.isLate)
+  ) {
+    return res
+      .status(400)
+      .send(
+        "Valeur invalide pour le filtre 'isLate'. Seules les valeurs 'true' ou 'false' sont autorisées"
+      );
   }
 
   const whereClause = {
@@ -27,7 +41,8 @@ router.get("/", async (req, res) => {
       [Op.and]: [
         { done: false },
         {
-          dueDate: filterQueries.isLate === "true"
+          dueDate:
+            filterQueries.isLate === "true"
               ? { [Op.lt]: new Date() }
               : { [Op.gte]: new Date() },
         },
@@ -102,7 +117,7 @@ router.get("/:id", async (req, res) => {
           model: Type,
           attributes: ["id", "title"],
         },
-      ]
+      ],
     });
 
     if (!task) {
@@ -121,6 +136,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const { title, description, dueDate, TypeId } = req.body;
+  const UserId = req.userId;
 
   try {
     const selectType = await Type.findByPk(TypeId);
@@ -134,6 +150,7 @@ router.post("/", async (req, res) => {
       description,
       dueDate,
       TypeId,
+      UserId,
     });
 
     res.json(task);
