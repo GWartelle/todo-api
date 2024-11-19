@@ -9,6 +9,7 @@ dotenv.config();
 require("./models");
 
 const logger = require("./middlewares/logger");
+const verifyToken = require("./middlewares/verifyToken");
 const indexRouter = require("./routes/index");
 const typeRouter = require("./routes/type");
 const taskRouter = require("./routes/task");
@@ -24,10 +25,10 @@ app.use(cookieParser());
 app.use(cors());
 
 app.use("/", indexRouter);
-app.use("/types", typeRouter);
-app.use("/tasks", taskRouter);
-app.use("/legacy/tasks", legacyTaskRouter);
+app.use("/types", verifyToken, typeRouter);
+app.use("/tasks", verifyToken, taskRouter);
 app.use("/auth", authRouter);
+app.use("/legacy/tasks", legacyTaskRouter);
 
 app.use((req, res) => {
   res.status(404).send("Not Found");
