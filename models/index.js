@@ -8,7 +8,7 @@ Task.belongsTo(User);
 Type.hasMany(Task);
 User.hasMany(Task);
 
-// sequelize.sync({ force: true });
+sequelize.sync({ alter: true });
 
 module.exports = {
   Type,
