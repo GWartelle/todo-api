@@ -1,8 +1,19 @@
 const express = require("express");
 const router = express.Router();
 
-/* GET home page. */
-router.get("/", function (req, res,) {
+/**
+ * @swagger
+ * /:
+ *  get:
+ *      description: Hello world
+ *      tags:
+ *       - default
+ *      responses:
+ *          200:
+ *              description: hello world
+ */
+
+router.get("/", (req, res) => {
   res.send("Hello world");
 });
 

@@ -5,10 +5,12 @@ const User = require("./User");
 
 Task.belongsTo(Type);
 Task.belongsTo(User);
+Type.belongsTo(User);
 Type.hasMany(Task);
 User.hasMany(Task);
+User.hasMany(Type);
 
-sequelize.sync({ alter: true });
+// sequelize.sync({ force: true });
 
 module.exports = {
   Type,
